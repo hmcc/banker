@@ -1,20 +1,36 @@
 package org.problemchimp.banker;
 
 import java.io.File;
+import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.SparkConf;
 
-public class ArgumentParser {
+public class AppConfig {
 	
-	private String[] args;
+	static Pattern SPARK_PROPERTY = Pattern.compile("^spark\\..*$");
 	
-	public ArgumentParser(String[] args) {
-		this.args = args;
+	private Properties appProperties;
+	private SparkConf sparkConf;
+	
+	public AppConfig(Properties appProperties) {
+		this.appProperties = appProperties;
+		sparkConf = new SparkConf();
+		for (Entry<Object, Object> e : appProperties.entrySet()) {
+			String key = e.getKey().toString();
+			String value = e.getValue().toString();
+			if (SPARK_PROPERTY.matcher(key).matches()) {
+				sparkConf.set(key, value);
+			}
+		}
 	}
-	
+
 	private void helpAndExit() {
-		System.out.println("Usage: java -jar banker.jar Main <input directory> <output directory>");
+		System.out.println("Usage: java -jar banker.jar Main");
+		System.out.println("The application is configured with the properties file in src/main/resources");
 		System.out.println("If input and/or output directories are not specified, the defaults are <user home>/in and <user home>/out");
 		System.exit(1);
 	}
@@ -28,10 +44,10 @@ public class ArgumentParser {
 		return home;
 	}
 	
-	private static File getOrDefault(String[] args, int index, Supplier<File> fn) {
+	private static File getOrDefault(Properties appProperties, String key, Supplier<File> fn) {
 		File value;
-		if (args.length > index) {
-			value = new File(args[index]);
+		if (appProperties.containsKey(key)) {
+			value = new File(appProperties.getProperty(key));
 		} else {
 			value = fn.get();
 		}
@@ -47,7 +63,7 @@ public class ArgumentParser {
 	}
 	
 	public File getInputDirectory() {
-		File inputDir = getOrDefault(args, 0, this::getDefaultInputDirectory);
+		File inputDir = getOrDefault(appProperties, "banker.inputDir", this::getDefaultInputDirectory);
 		if (!inputDir.isDirectory()) {
 			System.out.println("Input " + inputDir + " is not a directory");
 			helpAndExit();
@@ -56,7 +72,7 @@ public class ArgumentParser {
 	}
 	
 	public File getOutputDirectory() {
-		File outputDir = getOrDefault(args, 1, this::getDefaultOutputDirectory);
+		File outputDir = getOrDefault(appProperties, "banker.outputDir", this::getDefaultOutputDirectory);
 		if (!outputDir.isDirectory()) {
 			outputDir.mkdirs();
 		}
@@ -65,6 +81,10 @@ public class ArgumentParser {
 			helpAndExit();
 		}
 		return outputDir;
+	}
+	
+	public SparkConf getSparkConf() {
+		return sparkConf;
 	}
 
 }
