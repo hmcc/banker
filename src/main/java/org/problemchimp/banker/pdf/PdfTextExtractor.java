@@ -26,7 +26,6 @@ public class PdfTextExtractor {
 	private void initPdfBox() {
 		try {
 			stripper = new PDFTextStripper();
-			stripper.setSortByPosition(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
