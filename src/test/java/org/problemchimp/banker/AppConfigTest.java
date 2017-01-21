@@ -1,4 +1,4 @@
-package org.problemchimp;
+package org.problemchimp.banker;
 
 import static org.junit.Assert.assertEquals;
 

@@ -9,11 +9,14 @@ import java.util.List;
 import org.problemchimp.banker.pdf.PdfFileIterator;
 import org.problemchimp.banker.pdf.PdfFilename;
 import org.problemchimp.banker.pdf.PdfTextExtractor;
+import org.problemchimp.banker.task.Identify;
+import org.problemchimp.banker.task.Identify.Type;
 
 public class App {
 	
 	private File inputDir;
 	private File outputDir;
+	private Identify identify = new Identify();
 	private PdfTextExtractor extractor = new PdfTextExtractor();
 	
 	public App(AppConfig appConfig) throws IOException {
@@ -43,6 +46,10 @@ public class App {
 	private void processFile(File file) {
 		try {
 			List<String> lines = extractor.extractLines(file);
+			Type type = identify.run(lines);
+			if (type != Type.UNKNOWN) {
+				System.out.println(file + " is of type " + type);
+			}
 			String outputFilename = PdfFilename.replacePdfExtension(file.getName(), "txt");
 			writeToFile(lines, outputFilename);
 			
