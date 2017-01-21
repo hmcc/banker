@@ -5,23 +5,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.SparkConf;
 
 public class AppConfig {
 	
-	static Pattern SPARK_PROPERTY = Pattern.compile("^spark\\..*$");
 	
 	private Properties properties;
-	private SparkConf sparkConf;
 	
 	Properties loadAppProperties() throws IOException {
 		String propertiesFilename = "app.properties";
-		InputStream in = Main.class.getResourceAsStream("/" + propertiesFilename);
+		InputStream in = App.class.getResourceAsStream("/" + propertiesFilename);
 		if (in == null) {
 			throw new FileNotFoundException("Application properties file " + propertiesFilename + " not found");
 		}
@@ -35,18 +30,6 @@ public class AppConfig {
 		properties.putAll(loadAppProperties());
 		// system properties take precedence
 		properties.putAll(System.getProperties());
-		initSparkConf();
-	}
-	
-	private void initSparkConf() {
-		sparkConf = new SparkConf();
-		for (Entry<Object, Object> e : this.properties.entrySet()) {
-			String key = e.getKey().toString();
-			String value = e.getValue().toString();
-			if (SPARK_PROPERTY.matcher(key).matches()) {
-				sparkConf.set(key, value);
-			}
-		}
 	}
 
 	private void helpAndExit(String key) {
@@ -103,9 +86,4 @@ public class AppConfig {
 		}
 		return outputDir;
 	}
-	
-	public SparkConf getSparkConf() {
-		return sparkConf;
-	}
-
 }

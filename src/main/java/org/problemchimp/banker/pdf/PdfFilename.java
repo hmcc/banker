@@ -7,11 +7,11 @@ public class PdfFilename {
 	
 	public static Pattern PATTERN = Pattern.compile("(.+)\\.pdf$");
 	
-	public static String stripPdfExtension(String pdfFilename) {
+	public static String replacePdfExtension(String pdfFilename, String newExtension) {
 		Matcher m = PATTERN.matcher(pdfFilename);
 		if (m.matches()) {
-			return m.group(1);
+			return m.group(1) + "." + newExtension;
 		}
-		return pdfFilename;
+		return pdfFilename + "." + newExtension;
 	}
 }
