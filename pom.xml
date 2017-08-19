@@ -48,7 +48,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.problemchimp.banker.Main</mainClass>
+              <mainClass>org.problemchimp.banker.App</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

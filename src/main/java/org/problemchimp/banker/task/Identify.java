@@ -10,27 +10,27 @@ import java.util.regex.Pattern;
  *
  */
 public class Identify {
-	
-	public enum Type {
-		SMILE(Pattern.compile("Smile Current Account")), 
-		YORKSHIRE_BANK(Pattern.compile("Yorkshire Bank")), 
-		UNKNOWN(null);
-		
-		Pattern pattern;
-		
-		Type(Pattern pattern) {
-			this.pattern = pattern;
-		}
-	}
 
-	public Type run(Iterable<String> lines) {
-		for (String line : lines) {
-			for (Type t : Type.values()) {
-				if (t.pattern != null && t.pattern.matcher(line).find()) {
-					return t;
-				}
-			}
-		}
-		return Type.UNKNOWN;
-	}
+    public enum Type {
+        SMILE(Pattern.compile("Smile Current Account")), 
+        YORKSHIRE_BANK(Pattern.compile("Yorkshire Bank")), 
+        UNKNOWN(null);
+
+        Pattern pattern;
+
+        Type(Pattern pattern) {
+            this.pattern = pattern;
+        }
+    }
+
+    public Type run(Iterable<String> lines) {
+        for (String line : lines) {
+            for (Type t : Type.values()) {
+                if (t.pattern != null && t.pattern.matcher(line).find()) {
+                    return t;
+                }
+            }
+        }
+        return Type.UNKNOWN;
+    }
 }
