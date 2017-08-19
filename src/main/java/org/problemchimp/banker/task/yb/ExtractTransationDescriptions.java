@@ -10,7 +10,7 @@ public class ExtractTransationDescriptions {
 	Pattern BEFORE = Pattern.compile("Da[lt]e Description Debits Credits Balance");
 	Pattern AFTER = Pattern.compile("^[0-9.,]+$");
 	
-	Pattern DATE = Pattern.compile("^([0-9]{2} [A-Z][a-z]{2} ).*$");
+	Pattern DATE = Pattern.compile("^([0-9]{2} [A-Z][a-z]{2} ([0-9]{4} )?).*$");
 	Pattern FIRST_PAYMENT = Pattern.compile("^([0-9]{2} [A-Z][a-z]{2} )?.*\\*\\*F[il]rst Payment\\*\\*$");
 	
 	List<String> getRaw(Iterable<String> lines) {
@@ -45,13 +45,29 @@ public class ExtractTransationDescriptions {
 		return result;
 	}
 	
+	/**
+	 * Not all transaction descriptions for Yorkshire Bank have dates. If a
+	 * line is missing a date, then the date from the previous line should
+	 * be used. If a line has a date without a year then the most recently-
+	 * seen year should be used.
+	 *
+	 * @param lines
+	 * @return
+	 */
 	List<String> fixDates(Iterable<String> lines) {
 		List<String> result = new ArrayList<>();
 		String currentDate = null;
+		String currentYear = null;
 		for (String line : lines) {
 			Matcher m = DATE.matcher(line);
 			if (m.matches()) {
 				currentDate = m.group(1);
+				if (m.group(2) != null) {
+				    currentYear = m.group(2);
+				} else if (currentYear != null) {
+				    currentDate = currentDate + currentYear;
+				    line = currentDate + line.substring(7);
+				}
 				result.add(line);
 			} else {
 				result.add(currentDate + line);
