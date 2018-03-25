@@ -25,7 +25,7 @@ public class IdentifyTest {
                 "Date Description Money out Money in BalanceSummary", 
                 "Smile Current Account", 
                 "09 May BROUGHT FORWARD 123.45");
-        Type t = id.run(lines);
+        Type t = id.identify(lines);
         assertEquals(Type.SMILE, t);
     }
 
@@ -39,7 +39,7 @@ public class IdentifyTest {
                 "REQUEST", 
                 "^Yorkshire Bank", 
                 "MR A N OTHER");
-        Type t = id.run(lines);
+        Type t = id.identify(lines);
         assertEquals(Type.YORKSHIRE_BANK, t);
     }
 
@@ -53,7 +53,7 @@ public class IdentifyTest {
                 "REQUEST", 
                 "Date Description Money out Money in BalanceSummary", 
                 "MR A N OTHER");
-        Type t = id.run(lines);
+        Type t = id.identify(lines);
         assertEquals(Type.UNKNOWN, t);
     }
 
@@ -69,7 +69,7 @@ public class IdentifyTest {
                 "Date Description Money out Money in BalanceSummary", 
                 "Smile Current Account", 
                 "09 May BROUGHT FORWARD 123.45");
-        Type t = id.run(lines);
+        Type t = id.identify(lines);
         assertEquals(Type.YORKSHIRE_BANK, t);
     }
 }
